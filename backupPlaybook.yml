@@ -1,0 +1,27 @@
+---
+- name: Configurar respaldo completo
+  hosts: servidores
+  become: yes
+  tasks:
+    - name: Subir script de backup
+      copy:
+        src: backup.sh
+        dest: /usr/local/bin/backup.sh
+        mode: '0755'
+    
+    - name: Crear archivo crontab para backups
+      cron:
+        name: "Backup semanal"
+        minute: "0"
+        hour: "2"
+        day: "*"
+        month: "*"
+        weekday: "1" 
+        job: "/usr/local/bin/backup.sh"
+        state: present
+
+    - name: Asegurarse de que el directorio de logs existe
+      file:
+        path: /root/logsPropios
+        state: directory
+        mode: '0755'
